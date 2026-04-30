@@ -97,7 +97,7 @@ def find_calibration_toml_path(recording_path: Union[str, Path]) -> Path:
 
 
 if __name__ == "__main__":
-    recording_path = Path("PATH/TO/RECORDING/FOLDER")
+    recording_path = Path("./videos/movement_video_0430/")
     blender_path = Path("PATH/TO/BLENDER/EXECUTABLE")
 
-    process_recording_headless(recording_path=get_sample_data_path())
+    process_recording_headless(recording_path=recording_path)

@@ -6,6 +6,7 @@ from freemocap.core_processes.capture_volume_calibration.anipose_camera_calibrat
 )
 from freemocap.core_processes.capture_volume_calibration.charuco_stuff.charuco_board_definition import (
     CharucoBoardDefinition,
+    charuco_5x3,
 )
 
 
@@ -27,10 +28,11 @@ def headless_calibration(
 
 
 if __name__ == "__main__":
-    path_to_folder_of_calibration_videos = Path(r"C:\Users\aaron\freemocap_data\recording_sessions\freemocap_test_data\synchronized_videos")
-    charuco_square_size = 58  # size of a black square on your charuco board in mm
+    path_to_folder_of_calibration_videos = Path(r"./videos/calib_video_0430")
+    charuco_square_size = 51  # size of a black square on your charuco board in mm
 
     headless_calibration(
         path_to_folder_of_calibration_videos=path_to_folder_of_calibration_videos,
+        charuco_board_object=charuco_5x3(),
         charuco_square_size=charuco_square_size,
     )
