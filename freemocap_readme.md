@@ -21,12 +21,25 @@ consider using py39
 
 for better visualization, to combined annotated videos:
 ```bash
-ffmpeg -i cam0_synced_mediapipe.mp4 -i cam1_synced_mediapipe.mp4 -i cam2_synced_mediapipe.mp4 -i cam3_synced_mediapipe.mp4 \
--filter_complex \ 
-"[0:v][1:v][2:v][3:v]xstack=inputs=4:layout=0_0|w0_0|0_h0|w0_h0[v]" \
--map "[v]" combined_output.mp4
+ffmpeg \
+  -i cam0_synced_mediapipe.mp4 \
+  -i cam1_synced_mediapipe.mp4 \
+  -i cam2_synced_mediapipe.mp4 \
+  -i cam3_synced_mediapipe.mp4 \
+  -i cam4_synced_mediapipe.mp4 \
+  -i cam5_synced_mediapipe.mp4 \
+  -filter_complex \
+"[0:v][1:v][2:v][3:v][4:v][5:v]xstack=inputs=6:layout=0_0|0_h0|w0_0|w0_h0|w0+w2_0|w0+w2_h0[v]" \
+  -map "[v]" \
+  combined_output_3x2.mp4
 ```
 
 ```bash
-ffmpeg -i test_0430.mp4 -i combined_output.mp4 -filter_complex "[1:v]scale=-1:800[v1_scaled]; [0:v][v1_scaled]hstack=inputs=2[v]" -map "[v]" output.mp4
+ffmpeg -y \
+  -i 3d_skeleton.mp4 \
+  -i combined_output_3x2.mp4 \
+  -filter_complex "[1:v]scale=-2:800[v1_scaled];[0:v][v1_scaled]hstack=inputs=2[v]" \
+  -map "[v]" \
+  -c:v libx264 -crf 18 -preset medium -pix_fmt yuv420p \
+  output.mp4
 ```

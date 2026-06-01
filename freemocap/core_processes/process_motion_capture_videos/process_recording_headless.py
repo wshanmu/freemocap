@@ -25,6 +25,7 @@ def process_recording_headless(
         path_to_blender_executable: Optional[Union[str, Path]] = None,
         recording_processing_parameter_model: Optional[ProcessingParameterModel] = None,
         recording_info_model: Optional[RecordingInfoModel] = None,
+        num_processes: Optional[int] = None,
         run_blender: bool = True,
         make_jupyter_notebook: bool = True,
         use_tqdm: bool = True,
@@ -34,6 +35,11 @@ def process_recording_headless(
     if recording_processing_parameter_model is None:
         recording_processing_parameter_model = ProcessingParameterModel()
     rec = recording_processing_parameter_model
+
+    if num_processes is not None:
+        if num_processes < 1:
+            raise ValueError("num_processes must be 1 or greater.")
+        rec.tracking_parameters_model.num_processes = num_processes
 
     if recording_info_model is None:
         rec.recording_info_model = RecordingInfoModel(recording_folder_path=Path(recording_path))
@@ -51,7 +57,10 @@ def process_recording_headless(
     rec.recording_info_model = RecordingInfoModel(recording_folder_path=Path(recording_path))
 
     if path_to_camera_calibration_toml:
-        rec.recording_info_model.calibration_toml_path = Path(path_to_camera_calibration_toml)
+        calibration_toml_path = Path(path_to_camera_calibration_toml)
+        if not calibration_toml_path.exists():
+            raise FileNotFoundError(f"No calibration file found at: {calibration_toml_path}")
+        rec.recording_info_model.calibration_toml_path = calibration_toml_path
 
     if rec.recording_info_model.calibration_toml_path is None:
         number_of_videos = len(get_video_paths(rec.recording_info_model.synchronized_videos_folder_path))
@@ -97,7 +106,13 @@ def find_calibration_toml_path(recording_path: Union[str, Path]) -> Path:
 
 
 if __name__ == "__main__":
-    recording_path = Path("./videos/movement_video_0430/")
-    blender_path = Path("PATH/TO/BLENDER/EXECUTABLE")
+    freemocap_project_path = Path(__file__).resolve().parents[3]
+    recording_path = freemocap_project_path / "videos" / "fullCamera_movement_test"
+    calibration_path = recording_path / "fullCamera_Calib_camera_calibration.toml"
+    num_processes = 6
 
-    process_recording_headless(recording_path=recording_path)
+    process_recording_headless(
+        recording_path=recording_path,
+        path_to_camera_calibration_toml=calibration_path,
+        num_processes=num_processes,
+    )
