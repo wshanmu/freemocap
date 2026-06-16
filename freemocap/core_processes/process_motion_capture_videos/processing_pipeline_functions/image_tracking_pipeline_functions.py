@@ -82,6 +82,18 @@ def run_image_tracking(
     kill_event: multiprocessing.Event = None,
     use_tqdm: bool = True,
 ):
+    if getattr(model_info, "name", "") == "vitpose" or getattr(model_info, "tracker_name", "") == "ViTPoseTracker":
+        from freemocap.core_processes.process_motion_capture_videos.processing_pipeline_functions.vitpose_tracking_pipeline import (
+            run_vitpose_image_tracking,
+        )
+
+        return run_vitpose_image_tracking(
+            tracking_params=tracking_params,
+            synchronized_videos_folder_path=synchronized_videos_folder_path,
+            output_data_folder_path=output_data_folder_path,
+            num_tracked_points=model_info.num_tracked_points,
+        )
+
     if hasattr(tracking_params, "use_yolo_crop_method") and tracking_params.use_yolo_crop_method:
         model_info.tracker_name = "YOLOMediapipeComboTracker"
     # TODO: this shouldn't be handled here

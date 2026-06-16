@@ -1,4 +1,5 @@
 import logging
+import argparse
 from pathlib import Path
 from typing import Optional, Union
 
@@ -106,13 +107,44 @@ def find_calibration_toml_path(recording_path: Union[str, Path]) -> Path:
 
 
 if __name__ == "__main__":
-    freemocap_project_path = Path(__file__).resolve().parents[3]
-    recording_path = freemocap_project_path / "videos" / "fullCamera_movement_test"
-    calibration_path = recording_path / "fullCamera_Calib_camera_calibration.toml"
-    num_processes = 6
+    parser = argparse.ArgumentParser(description="Process a FreeMoCap recording folder without the GUI.")
+    parser.add_argument(
+        "--recording-path",
+        type=Path,
+        default=None,
+        help="Recording folder path. May also be a synchronized_videos folder.",
+    )
+    parser.add_argument(
+        "--calibration-path",
+        type=Path,
+        default=None,
+        help="Camera calibration TOML path to use for multicamera recordings.",
+    )
+    parser.add_argument("--num-processes", type=int, default=6, help="Number of worker processes.")
+    parser.add_argument("--blender-path", type=Path, default=None, help="Optional Blender executable path.")
+    parser.add_argument("--run-blender", action="store_true", help="Export a Blender file after processing.")
+    parser.add_argument(
+        "--make-jupyter-notebook",
+        action="store_true",
+        help="Generate the FreeMoCap analysis notebook after processing.",
+    )
+    parser.add_argument("--no-tqdm", action="store_true", help="Disable tqdm progress bars.")
+    args = parser.parse_args()
+
+    if args.recording_path is None:
+        freemocap_project_path = Path(__file__).resolve().parents[3]
+        recording_path = freemocap_project_path / "videos" / "fullCamera_movement_test"
+        calibration_path = recording_path / "fullCamera_Calib_camera_calibration.toml"
+    else:
+        recording_path = args.recording_path
+        calibration_path = args.calibration_path
 
     process_recording_headless(
         recording_path=recording_path,
         path_to_camera_calibration_toml=calibration_path,
-        num_processes=num_processes,
+        path_to_blender_executable=args.blender_path,
+        num_processes=args.num_processes,
+        run_blender=args.run_blender,
+        make_jupyter_notebook=args.make_jupyter_notebook,
+        use_tqdm=not args.no_tqdm,
     )

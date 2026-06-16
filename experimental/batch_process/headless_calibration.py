@@ -28,7 +28,8 @@ def headless_calibration(
 
 
 if __name__ == "__main__":
-    path_to_folder_of_calibration_videos = Path(r"./videos/fullCamera_Calib/synced")
+    # path_to_folder_of_calibration_videos = Path(r"./videos/fullCamera_Calib/synced")
+    path_to_folder_of_calibration_videos = Path(r"..//ssd_datas/fitness_data/synchronized/calibration_0602/cameras/synced")
     charuco_square_size = 156.6  # size of a black square on your charuco board in mm
 
     headless_calibration(
