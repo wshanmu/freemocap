@@ -525,6 +525,7 @@ class Camera:
             world_position=np.zeros(3),
             name=None,
             extra_dist=False,
+            optimize_intrinsics=True,
     ):
         self.set_camera_matrix(matrix)
         self.set_distortions(dist)
@@ -535,6 +536,7 @@ class Camera:
         self.set_world_position(world_position)
         self.set_name(name)
         self.extra_dist = extra_dist
+        self.optimize_intrinsics = optimize_intrinsics
 
     def get_dict(self):
         return {
@@ -642,6 +644,9 @@ class Camera:
         self.set_camera_matrix(new_matrix)
 
     def get_params(self):
+        if not self.optimize_intrinsics:
+            return np.hstack([self.get_rotation(), self.get_translation()])
+
         params = np.zeros(8 + self.extra_dist, dtype="float64")
         params[0:3] = self.get_rotation()
         params[3:6] = self.get_translation()
@@ -655,6 +660,9 @@ class Camera:
     def set_params(self, params):
         self.set_rotation(params[0:3])
         self.set_translation(params[3:6])
+        if not self.optimize_intrinsics:
+            return
+
         self.set_focal_length(params[6])
 
         dist = np.zeros(5, dtype="float64")
@@ -708,7 +716,8 @@ class Camera:
             name=self.get_name(),
             extra_dist=self.extra_dist,
             world_orientation=self.get_world_orientation().copy(),
-            world_position=self.get_world_position().copy()
+            world_position=self.get_world_position().copy(),
+            optimize_intrinsics=self.optimize_intrinsics,
         )
 
 
@@ -722,6 +731,7 @@ class FisheyeCamera(Camera):
             tvec=np.zeros(3),
             name=None,
             extra_dist=False,
+            optimize_intrinsics=True,
     ):
         self.set_camera_matrix(matrix)
         self.set_distortions(dist)
@@ -730,6 +740,7 @@ class FisheyeCamera(Camera):
         self.set_translation(tvec)
         self.set_name(name)
         self.extra_dist = extra_dist
+        self.optimize_intrinsics = optimize_intrinsics
 
     def from_dict(d):
         cam = FisheyeCamera()
@@ -778,6 +789,9 @@ class FisheyeCamera(Camera):
     def set_params(self, params):
         self.set_rotation(params[0:3])
         self.set_translation(params[3:6])
+        if not self.optimize_intrinsics:
+            return
+
         self.set_focal_length(params[6])
 
         dist = np.zeros(4, dtype="float64")
@@ -789,6 +803,9 @@ class FisheyeCamera(Camera):
         self.set_distortions(dist)
 
     def get_params(self):
+        if not self.optimize_intrinsics:
+            return np.hstack([self.get_rotation(), self.get_translation()])
+
         params = np.zeros(8 + self.extra_dist, dtype="float64")
         params[0:3] = self.get_rotation()
         params[3:6] = self.get_translation()
@@ -810,6 +827,7 @@ class FisheyeCamera(Camera):
             tvec=self.get_translation().copy(),
             name=self.get_name(),
             extra_dist=self.extra_dist,
+            optimize_intrinsics=self.optimize_intrinsics,
         )
 
 
