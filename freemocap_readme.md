@@ -66,6 +66,7 @@ Run only intrinsics:
 python pose_recording/run_freemocap_split_calibration.py \
   --exp_name calibration_intrinsics_0618 \
   --charuco_square_size 156.6 \
+  --max-intrinsic-frames-per-camera 300 \
   --mode intrinsics
 ```
 
@@ -76,7 +77,7 @@ python pose_recording/run_freemocap_split_calibration.py \
   --charuco_square_size 156.6 \
   --mode intrinsics \
   --cameras cam4_synced \
-  --max-intrinsic-frames-per-camera 350 \
+  --max-intrinsic-frames-per-camera 300 \
   --max-outlier-passes 3
 ```
 
@@ -88,6 +89,7 @@ python pose_recording/run_freemocap_split_calibration.py \
   --exp_name extrinsics_01 \
   --charuco_square_size 156.6 \
   --mode extrinsics \
+  --max-frames-per-camera 500
   --intrinsics-dir ssd_datas/fitness_data/synchronized/intrinsics_new_4/cameras/intrinsics
 ```
 
